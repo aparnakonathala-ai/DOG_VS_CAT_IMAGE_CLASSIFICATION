@@ -1,0 +1,6 @@
+# Additional test & deployment packages
+pytest==7.4.2
+gunicorn==21.0.0
+
+# Note: TensorFlow is optional and only required if you plan to load a Keras model.
+# tensorflow==2.14.0

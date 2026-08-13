@@ -1,0 +1,22 @@
+__pycache__/
+venv/
+.env
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+_build/
+
+# Docker
+*.pyc
+__pycache__/
+.dockerignore
+
+# Git
+.git
+
+# Model files (do not include large models accidentally)
+model/*.h5
+model/*.pt
+model/saved_model/

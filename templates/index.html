@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dog & Cat Image Classifier</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+  </head>
+  <body>
+    <header class="header">
+      <h1>Dog & Cat Image Classifier</h1>
+      <p class="subtitle">Upload an image and let Machine Learning identify whether it is a Dog or Cat.</p>
+    </header>
+
+    <main class="container">
+      <section class="uploader">
+        <div id="drop-area" class="drop-area">
+          <form class="my-form">
+            <p>Drag & Drop an image here or</p>
+            <input type="file" id="fileElem" accept="image/*"> 
+            <label class="button" for="fileElem">Choose Image</label>
+            <p class="note">Supported formats: JPG, JPEG, PNG. Max size: 5MB.</p>
+          </form>
+        </div>
+
+        <div id="preview" class="preview hidden">
+          <img id="preview-img" src="#" alt="Image preview">
+        </div>
+
+        <div class="controls">
+          <button id="classifyBtn" class="btn" disabled>Classify Image</button>
+          <div id="loading" class="hidden">Classifying... <span class="loader"></span></div>
+        </div>
+
+        <div id="result" class="result hidden">
+          <h2 id="prediction-text">Prediction: -</h2>
+          <p id="confidence-text">Confidence: -</p>
+          <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>

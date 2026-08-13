@@ -1,0 +1,12 @@
+Flask==2.3.4
+Werkzeug==3.0.0
+Pillow==10.0.0
+numpy==1.26.4
+
+# Note: Add your ML framework only if you have a model to load.
+# For TensorFlow/Keras models, uncomment the following:
+# tensorflow==2.14.0
+
+# For PyTorch models, uncomment the following:
+# torch==2.2.0
+

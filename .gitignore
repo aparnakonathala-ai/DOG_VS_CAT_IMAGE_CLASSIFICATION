@@ -1,0 +1,23 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualenv
+venv/
+ENV/
+env/
+
+# VSCode
+.vscode/
+
+# macOS
+.DS_Store
+
+# Temporary uploaded files
+uploads/
+
+# Model files (uncomment if you want to ignore large models)
+# model/*.h5
+# model/*.pt
+# model/saved_model/

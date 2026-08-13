@@ -3,10 +3,13 @@ Werkzeug==3.0.0
 Pillow==10.0.0
 numpy==1.26.4
 
-# Note: Add your ML framework only if you have a model to load.
-# For TensorFlow/Keras models, uncomment the following:
+# Optional ML frameworks: Uncomment the one you need after adding a model to model/
+# TensorFlow / Keras (for .h5 or SavedModel)
 # tensorflow==2.14.0
 
-# For PyTorch models, uncomment the following:
+# PyTorch (for .pt or .pth)
 # torch==2.2.0
+
+# ONNX Runtime (for .onnx)
+# onnxruntime==1.17.0
 

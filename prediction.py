@@ -55,28 +55,35 @@ class Predictor:
 
     def _try_load_model(self):
         fw = self.config.get('framework', 'placeholder').lower()
-        model_path = os.path.join(self.model_dir, os.path.basename(self.config.get('model_path', '')))
+        model_path_cfg = self.config.get('model_path', '')
+        model_path = os.path.join(self.model_dir, model_path_cfg) if model_path_cfg else ''
         self.framework = fw
 
         if fw == 'placeholder':
             logging.info('Using placeholder predictor (no model).')
             return
 
-        if not os.path.exists(model_path):
+        if not model_path or not os.path.exists(model_path):
             logging.warning('Model file not found at %s — falling back to placeholder.', model_path)
             return
 
         try:
             if fw == 'keras' or fw == 'tensorflow':
-                # Lazy import tensorflow.keras
+                # Lazy import tensorflow.keras with suppressed logs
                 try:
+                    os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL', '2')
                     from tensorflow.keras.models import load_model
                 except Exception as e:
                     logging.exception('Failed to import TensorFlow/Keras: %s', e)
                     return
-                self.model = load_model(model_path)
-                self._loaded = True
-                logging.info('Keras model loaded from %s', model_path)
+                try:
+                    # load_model supports both .h5 files and SavedModel directories
+                    self.model = load_model(model_path)
+                    self._loaded = True
+                    logging.info('Keras model loaded from %s', model_path)
+                except Exception as e:
+                    logging.exception('Failed to load Keras model: %s', e)
+                    self.model = None
 
             elif fw == 'pytorch' or fw == 'torch':
                 try:
@@ -87,7 +94,11 @@ class Predictor:
                 # load model - assume entire model was saved (scripted or state_dict)
                 try:
                     self.model = torch.load(model_path, map_location=torch.device('cpu'))
-                    self.model.eval()
+                    # if state_dict was saved instead, user should load into model architecture
+                    try:
+                        self.model.eval()
+                    except Exception:
+                        pass
                     self._loaded = True
                     logging.info('PyTorch model loaded from %s', model_path)
                 except Exception as e:
@@ -154,7 +165,6 @@ class Predictor:
         return {'prediction': prediction, 'confidence': round(confidence, 2)}
 
     def predict_with_keras(self, preprocessed):
-        # Keras expects channels_last by default
         preds = self.model.predict(preprocessed)
         # preds shape can be (1,1) for sigmoid or (1,2+) for softmax
         if preds.ndim == 2 and preds.shape[1] == 1:
@@ -176,16 +186,12 @@ class Predictor:
         tensor = torch.from_numpy(preprocessed)
         # Ensure float32
         tensor = tensor.float()
-        # If tensor is channels_last (N,H,W,C) and model expects NCHW, the config should set channel_order
-        # Model is assumed to output logits or probabilities
         with torch.no_grad():
             if hasattr(self.model, 'to'):
-                # ensure on CPU
                 try:
                     self.model.to('cpu')
                 except Exception:
                     pass
-            # If numpy is channels_last but model expects channels_first, config should have handled transpose
             out = self.model(tensor)
             if isinstance(out, (list, tuple)):
                 out = out[0]
@@ -205,7 +211,6 @@ class Predictor:
         return {'prediction': label, 'confidence': confidence}
 
     def predict_with_onnx(self, preprocessed):
-        # ONNX Runtime expects numpy inputs; find input name
         sess = self.model
         input_name = sess.get_inputs()[0].name
         outputs = sess.run(None, {input_name: preprocessed.astype(np.float32)})

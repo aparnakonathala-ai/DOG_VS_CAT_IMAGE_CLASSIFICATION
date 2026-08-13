@@ -2,10 +2,14 @@
 
 This repository contains a Flask web application that provides a simple interface to classify images as Dog or Cat. The current branch (webapp) includes a placeholder prediction function by default.
 
-If you have a trained model, place it under the model/ directory and update model/config.json. The app supports (via lazy imports) the following frameworks:
-- Keras / TensorFlow (.h5 or SavedModel)
-- PyTorch (.pt / .pth)
-- ONNX (.onnx)
+Keras Integration
+
+- I have integrated a Keras/TensorFlow loader into the Predictor. If you place a Keras model (HDF5 .h5 file or a SavedModel directory) under the model/ directory and set model/config.json to use framework: "keras" (or "tensorflow"), the app will attempt to load it on startup.
+- The predictor uses lazy imports and suppresses TensorFlow warnings so the app remains usable even if TensorFlow is not installed.
+
+If you want Keras support locally, install TensorFlow after activating your virtual environment:
+
+   pip install tensorflow==2.14.0
 
 Setup
 1. Create and activate a virtual environment:
@@ -18,16 +22,7 @@ Setup
 
    pip install -r requirements.txt
 
-3. If you plan to use a real model, uncomment the appropriate framework in requirements.txt and install it. Examples:
-
-   # For Keras/TensorFlow
-   pip install tensorflow==2.14.0
-
-   # For PyTorch
-   pip install torch
-
-   # For ONNX Runtime
-   pip install onnxruntime
+3. If you have a Keras model, install TensorFlow as above.
 
 Run
 
@@ -38,9 +33,7 @@ Open your browser at http://127.0.0.1:5000
 Adding a real model
 
 - Place your model file in the model/ directory.
-  - Keras example: model/model.h5
-  - PyTorch example: model/model.pt
-  - ONNX example: model/model.onnx
+  - Keras example: model/model.h5 or model/saved_model/
 
 - Edit model/config.json and set the following fields appropriately:
   - framework: 'keras' | 'pytorch' | 'onnx' | 'placeholder'
@@ -57,4 +50,4 @@ Notes on preprocessing and mapping
 - For PyTorch models that expect NCHW input, set "channel_order": "channels_first" in config.json.
 - The predictor attempts to interpret model outputs as probabilities (sigmoid for single-output, softmax for multi-output). Ensure your model outputs match these conventions or adapt prediction.py accordingly.
 
-If you provide your model here, I can integrate it, test, and adjust preprocessing to match the original training pipeline.
+If you provide your model here, I can integrate it fully, test, and adjust preprocessing to match the original training pipeline.

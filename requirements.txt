@@ -5,7 +5,7 @@ numpy==1.26.4
 
 # Optional ML frameworks: Uncomment the one you need after adding a model to model/
 # TensorFlow / Keras (for .h5 or SavedModel)
-# tensorflow==2.14.0
+ tensorflow==2.14.0
 
 # PyTorch (for .pt or .pth)
 # torch==2.2.0
